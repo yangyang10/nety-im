@@ -102,5 +102,5 @@ dependencies {
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     // Kotlin核心库：使用项目根目录版本
     implementation "org.jetbrains.kotlin:kotlin-stdlib:2.0.21"
-    implementation rootProject.ext.annotation
+    implementation "androidx.annotation:annotation:1.3.0"
 }
