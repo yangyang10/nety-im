@@ -1,0 +1,106 @@
+plugins {
+    id 'com.android.library'
+    id 'org.jetbrains.kotlin.android'
+    id 'maven-publish'
+}
+
+android {
+    compileSdk 35
+
+    namespace 'com.xiaotimel.im'
+
+    defaultConfig {
+        //最低兼容系统版本
+        minSdkVersion Integer.parseInt(project.property("android.minSdk"))
+        //目标SDK版本
+        targetSdkVersion Integer.parseInt(project.property("android.targetSdk"))
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+    kotlinOptions {
+        jvmTarget = "17"
+    }
+
+    lintOptions {
+        checkReleaseBuilds false
+        abortOnError false
+    }
+
+    publishing {
+        singleVariant("release") {
+            withSourcesJar()  // 自動生成 -sources.jar 並加入 publication，避免重複
+            // 如果未來需要 javadoc，可加： withJavadocJar()
+        }
+    }
+}
+
+// 配置 Maven 发布
+afterEvaluate {
+    // 生成 javadoc jar - Android 中使用空 javadoc
+    task javadocJar(type: Jar) {
+        archiveClassifier = 'javadoc'
+        from "$buildDir/javadoc"
+    }
+
+    publishing {
+        publications {
+            // 创建 release publication
+            release(MavenPublication) {
+                // 从配置文件读取
+                groupId = 'com.xiaotimel.im'
+                artifactId = 'websocket'
+                version = project.property("lib_websocket_version") ?: "1.0.0"
+
+                // 从 android 库组件获取
+                from components.findByName("release")
+
+                // 包含 javadoc jar
+                artifact javadocJar
+
+                // 配置 pom 信息
+                pom {
+                    name = project.property("pom.name")
+                    description = project.property("pom.description")
+                    url = project.property("pom.url")
+
+                    licenses {
+                        license {
+                            name = project.property("pom.license.name")
+                            url = project.property("pom.license.url")
+                        }
+                    }
+
+                    developers {
+                        developer {
+                            id = project.property("pom.developer.id")
+                            name = project.property("pom.developer.name")
+                            email = project.property("pom.developer.email")
+                        }
+                    }
+
+                    scm {
+                        connection = project.property("pom.scm.connection")
+                        developerConnection = project.property("pom.scm.connection")
+                        url = project.property("pom.scm.url")
+                    }
+                }
+            }
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    // Kotlin核心库：使用项目根目录版本
+    implementation "org.jetbrains.kotlin:kotlin-stdlib:2.0.21"
+    implementation rootProject.ext.annotation
+}
