@@ -1,5 +1,7 @@
 package com.xiaotimel.im.netty.interfaces
 
+import com.xiaotimel.im.netty.config.ProtocolConfig
+
 /**
  * Created by HHY on 2021/3/2 3:11 PM
  * Desc: webSocket(netty) 配置连接信息
@@ -44,4 +46,12 @@ interface OnNettyConfigListener {
      * @return
      */
     fun getResendInterval(): Int
+
+    /**
+     * 获取协议配置
+     * 返回null时使用默认配置
+     *
+     * @return 协议配置对象
+     */
+    fun getProtocolConfig(): ProtocolConfig? = null
 }

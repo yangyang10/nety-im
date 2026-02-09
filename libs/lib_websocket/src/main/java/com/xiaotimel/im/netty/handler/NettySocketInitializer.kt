@@ -1,6 +1,7 @@
 package com.xiaotimel.im.netty.handler
 
 import com.xiaotimel.im.netty.constant.NettyConfig
+import com.xiaotimel.im.netty.config.ProtocolConfig
 import com.xiaotimel.im.netty.decode.WlwFrameDecoder
 import com.xiaotimel.im.netty.interfaces.NettyClientInterface
 import com.xiaotimel.im.util.LogUtils
@@ -43,7 +44,9 @@ class NettySocketInitializer : ChannelInitializer<SocketChannel> {
             pipeline.addLast("HttpClientCodec", HttpClientCodec())
             pipeline.addLast("HttpObjectAggregator", HttpObjectAggregator(1024 * 10));
 
-            pipeline.addLast("framer", WlwFrameDecoder())
+            // 获取协议配置并传递给解码器
+            val protocolConfig: ProtocolConfig? = mClientInterface.getProtocolConfig()
+            pipeline.addLast("framer", WlwFrameDecoder(protocolConfig))
             pipeline.addLast("decoder", ByteArrayDecoder())
             pipeline.addLast("encoder", ByteArrayEncoder())
             pipeline.addLast(NettySocketReadHandler::class.java.simpleName, NettySocketReadHandler(mClientInterface))

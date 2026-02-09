@@ -5,8 +5,10 @@ package com.xiaotimel.im.netty.decode;
  * 描述：TCP协议头
  * 作者：hhy
  * 创建时间：2017/9/19 10:06
+ *
+ * @deprecated 使用 {@link com.xiaotimel.im.netty.config.ProtocolConfig} 替代
  */
-
+@Deprecated
 public class ProtocalHeadInfo {
     private static final String HEAD_RPC = "#XIAOTIMEL#";//标识开始 （8个字符）
     private static final String VERSION = "01";//协议主版本号 （2个字符）

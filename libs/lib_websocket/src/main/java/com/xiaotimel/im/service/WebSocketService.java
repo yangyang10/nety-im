@@ -134,3 +134,31 @@ public class WebSocketService extends Service {
 
     }
 }
+
+/**
+ *   Default Configuration (Backward Compatible)
+ *
+ *   val client = WebSocketClient.INSTANCE.getINSTANCE()
+ *       .getMBuilder()
+ *       .setConnectUrl("ws://example.com")
+ *       .setConnectCallback(callback)
+ *       .build()
+ *
+ *   Custom Protocol Configuration
+ *
+ *   val customProtocol = ProtocolConfig(
+ *       headRpc = "#CUSTOM#",
+ *       version = "02",
+ *       subVersion = "00"
+ *   )
+ *
+ *   val client = WebSocketClient.INSTANCE.getINSTANCE()
+ *       .getMBuilder()
+ *       .setConnectUrl("ws://example.com")
+ *       .setProtocolConfig(customProtocol)
+ *       .setConnectCallback(callback)
+ *       .build()
+ *
+ *
+ *
+ */

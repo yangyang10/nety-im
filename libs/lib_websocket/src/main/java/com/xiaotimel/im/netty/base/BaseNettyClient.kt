@@ -1,6 +1,7 @@
 package com.xiaotimel.im.netty.base
 
 import com.xiaotimel.im.netty.ExecutorServiceFactory
+import com.xiaotimel.im.netty.config.ProtocolConfig
 import com.xiaotimel.im.netty.constant.NettyConfig
 import com.xiaotimel.im.netty.handler.NettySocketReadHandler
 import com.xiaotimel.im.netty.interfaces.NettyClientInterface
@@ -219,6 +220,10 @@ open class BaseNettyClient : NettyClientInterface {
 
     override fun getConnectUrl(): String? {
         return mConnectUrl
+    }
+
+    override fun getProtocolConfig(): ProtocolConfig? {
+        return mConfigListener?.getProtocolConfig()
     }
 
 }

@@ -1,6 +1,7 @@
 package com.xiaotimel.im.netty.interfaces
 
 import com.xiaotimel.im.netty.ExecutorServiceFactory
+import com.xiaotimel.im.netty.config.ProtocolConfig
 import io.netty.channel.Channel
 import io.netty.channel.socket.SocketChannel
 import io.netty.handler.ssl.SslHandler
@@ -83,5 +84,12 @@ interface NettyClientInterface {
      * 链接地址
      */
     fun getConnectUrl():String?
+
+    /**
+     * 获取协议配置
+     *
+     * @return 协议配置对象，null时使用默认配置
+     */
+    fun getProtocolConfig(): ProtocolConfig?
 
 }
