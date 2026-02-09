@@ -1,5 +1,7 @@
 package com.xiaotimel.im.netty.handler;
 
+import com.xiaotimel.im.netty.decode.BytesUtil;
+import com.xiaotimel.im.netty.decode.ProtocalHeadInfo;
 import com.xiaotimel.im.netty.interfaces.NettyClientInterface;
 import com.xiaotimel.im.netty.message.ChannelMsgHandler;
 import com.xiaotimel.im.netty.message.SystemMsgHandler;
@@ -68,7 +70,7 @@ public class NettySocketReadHandler extends ChannelInboundHandlerAdapter {
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
 
-        if (!this.handshaker.isHandshakeComplete() && msg instanceof FullHttpResponse) {
+        if (this.handshaker != null && !this.handshaker.isHandshakeComplete() && msg instanceof FullHttpResponse) {
             FullHttpResponse response = (FullHttpResponse) msg;
             try {
                 this.handshaker.finishHandshake(ctx.channel(), response);
@@ -103,9 +105,10 @@ public class NettySocketReadHandler extends ChannelInboundHandlerAdapter {
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         super.exceptionCaught(ctx, cause);
         // channel 通道异常，关闭重新链接服务器
-//        LogUtils.e(TAG, "exceptionCaught 通道异常", true);
         clearAndConnect(ctx.channel());
     }
+
+
 
     private void clearAndConnect(Channel channel){
         if(channel == null) return;
@@ -158,8 +161,34 @@ public class NettySocketReadHandler extends ChannelInboundHandlerAdapter {
      * @param message
      */
     private void analyticMessage(Object message) {
-        // 消息解析
-        channelMsgHandler.doHandler(message);
+        if(message instanceof byte[]){
+            byte[] data = (byte[]) message;
+            //如果接收消息长度大于消息体的长度
+            if (data.length > ProtocalHeadInfo.HEAD_LENGTH) {
+                //如果消息一消息头部开始
+                if (BytesUtil.isIndexOfSubBytes(data, ProtocalHeadInfo.HEAD_RPC_BYTES)) {
+                    //截取消息头部消息内容长度的字节数组
+                    byte[] bytes = BytesUtil.subByte(data,
+                            ProtocalHeadInfo.MESSAGE_LENG_INDEX,
+                            ProtocalHeadInfo.MESSAGE_LENG_INFO_LENGTH);
+                    try {
+                        int msgLength = Integer.parseInt(new String(bytes));
+                        //如果消息头部长度和消息内容一样长，那么是一个完整的包，不进行粘包处理
+                        if (msgLength == data.length) {
+                            // 完整消息包进行处理
+                            String messageStr = BytesUtil.getString(BytesUtil.subByte(data, ProtocalHeadInfo.HEAD_LENGTH, msgLength - ProtocalHeadInfo.HEAD_LENGTH), "UTF-8");
+                            LogUtils.d("","---接收到的消息--"+messageStr);
+                            // 消息转发
+                            channelMsgHandler.doHandler(messageStr);
+                        }
+                    } catch (Exception e) {
+                        //如何处理
+                        return;
+                    }
+                }
+            }
+        }
+
     }
 
     private HeartbeatTask mBeatTask;
