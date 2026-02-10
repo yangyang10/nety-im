@@ -39,14 +39,12 @@ android {
     publishing {
         singleVariant("release") {
             withSourcesJar()  // 自動生成 -sources.jar 並加入 publication，避免重複
-            // 如果未來需要 javadoc，可加： withJavadocJar()
         }
     }
 }
 
 // 配置 Maven 发布
 afterEvaluate {
-    // 生成 javadoc jar - Android 中使用空 javadoc
     task javadocJar(type: Jar) {
         archiveClassifier = 'javadoc'
         from "$buildDir/javadoc"

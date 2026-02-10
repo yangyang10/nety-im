@@ -58,5 +58,9 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     // 添加 lib_websocket 依赖
-    implementation(project(":libs:lib_websocket"))
+//    implementation(project(":libs:lib_websocket"))
+
+        implementation("io.github.yangyang10.lib:websocket:1.0.0")
+
+
 }
