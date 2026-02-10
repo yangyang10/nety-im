@@ -57,7 +57,7 @@ afterEvaluate {
             // 创建 release publication
             release(MavenPublication) {
                 // 从配置文件读取
-                groupId = 'com.xiaotimel.im'
+                groupId = 'io.github.yangyang10.lib'
                 artifactId = 'websocket'
                 version = project.property("lib_websocket_version") ?: "1.0.0"
 
@@ -100,6 +100,25 @@ afterEvaluate {
 
     // 配置签名 - 在 publications 创建之后
     signing {
+        required = true
+
+        def keyFile = findProperty("signing.keyFile")
+        def keyPass = findProperty("signing.password")
+        def keyId   = findProperty("signing.keyId")
+
+        if (!keyFile || !keyPass || !keyId) {
+            throw new GradleException(
+                    "PGP signing config missing: " +
+                            "keyFile=${keyFile}, keyId=${keyId}"
+            )
+        }
+
+        useInMemoryPgpKeys(
+                keyId,
+                file(keyFile).text,
+                keyPass
+        )
+
         sign publishing.publications.release
     }
 }
